@@ -72,7 +72,7 @@ public class DataFlowMachineMonitor {
 
         var tempMonitor = DataFlow.groupBy(MachineProfileEvent::id)
                 .mapValues(MachineState::new)
-                .mapBiFunction(Helpers::addContact, DataFlow.groupBy(SupportContactEvent::locationCode))
+                .mapBi(DataFlow.groupBy(SupportContactEvent::locationCode), Helpers::addContact)
                 .innerJoin(currentMachineTemp, MachineState::setCurrentTemperature)
                 .innerJoin(avgMachineTemp, MachineState::setAvgTemperature)
                 .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
