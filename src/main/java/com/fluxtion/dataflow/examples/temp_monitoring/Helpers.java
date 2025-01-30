@@ -1,6 +1,7 @@
 package com.fluxtion.dataflow.examples.temp_monitoring;
 
-import com.fluxtion.dataflow.runtime.dataflow.groupby.GroupBy;
+
+import com.fluxtion.dataflow.runtime.flowfunction.groupby.GroupBy;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

@@ -16,11 +16,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>repsy-raidr</id>
+            <name>Fluxtion Rraidr repsy</name>
+            <url>https://repo.repsy.io/mvn/gregv12/default</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.fluxtion.dataflow</groupId>
-            <artifactId>interpreter</artifactId>
-            <version>1.8-SNAPSHOT</version>
+            <artifactId>builder</artifactId>
+            <version>1.11</version>
         </dependency>
 
         <dependency>

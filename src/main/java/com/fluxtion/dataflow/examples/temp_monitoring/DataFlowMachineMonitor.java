@@ -1,11 +1,11 @@
 package com.fluxtion.dataflow.examples.temp_monitoring;
 
 
-import com.fluxtion.dataflow.DataFlow;
-import com.fluxtion.dataflow.runtime.StaticEventProcessor;
-import com.fluxtion.dataflow.runtime.dataflow.groupby.GroupBy;
+import com.fluxtion.dataflow.builder.DataFlowBuilder;
+import com.fluxtion.dataflow.runtime.DataFlow;
+import com.fluxtion.dataflow.runtime.flowfunction.aggregate.function.primitive.DoubleAverageFlowFunction;
+import com.fluxtion.dataflow.runtime.flowfunction.groupby.GroupBy;
 import com.fluxtion.dataflow.runtime.time.FixedRateTrigger;
-import com.fluxtion.dataflow.runtime.dataflow.aggregate.function.primitive.DoubleAverageFlowFunction;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -65,14 +65,14 @@ import java.util.concurrent.TimeUnit;
 public class DataFlowMachineMonitor {
 
     public static void main(String[] args) {
-        var currentMachineTemp = DataFlow.groupBy(MachineReadingEvent::id, MachineReadingEvent::temp);
+        var currentMachineTemp = DataFlowBuilder.groupBy(MachineReadingEvent::id, MachineReadingEvent::temp);
 
-        var avgMachineTemp = DataFlow.subscribe(MachineReadingEvent.class)
+        var avgMachineTemp = DataFlowBuilder.subscribe(MachineReadingEvent.class)
                 .groupBySliding(MachineReadingEvent::id, MachineReadingEvent::temp, DoubleAverageFlowFunction::new, 1000, 4);
 
-        var tempMonitor = DataFlow.groupBy(MachineProfileEvent::id)
+        var tempMonitor = DataFlowBuilder.groupBy(MachineProfileEvent::id)
                 .mapValues(MachineState::new)
-                .mapBi(DataFlow.groupBy(SupportContactEvent::locationCode), Helpers::addContact)
+                .mapBi(DataFlowBuilder.groupBy(SupportContactEvent::locationCode), Helpers::addContact)
                 .innerJoin(currentMachineTemp, MachineState::setCurrentTemperature)
                 .innerJoin(avgMachineTemp, MachineState::setAvgTemperature)
                 .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
@@ -86,7 +86,7 @@ public class DataFlowMachineMonitor {
         runSimulation(tempMonitor);
     }
 
-    private static void runSimulation(StaticEventProcessor tempMonitor) {
+    private static void runSimulation(DataFlow tempMonitor) {
         tempMonitor.addSink("alarmPublisher", Helpers::prettyPrintAlarms);
 
         final String[] MACHINE_IDS = new String[]{"server_GOOG", "server_AMZN", "server_MSFT", "server_TKM"};
