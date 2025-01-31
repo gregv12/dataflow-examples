@@ -16,11 +16,40 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.openjdk.jmh</groupId>
+                            <artifactId>jmh-generator-annprocess</artifactId>
+                            <version>1.37</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.36</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <repositories>
         <repository>
-            <id>repsy-raidr</id>
-            <name>Fluxtion Rraidr repsy</name>
+            <id>repsy-fluxtion</id>
+            <name>Fluxtion public repo</name>
             <url>https://repo.repsy.io/mvn/gregv12/default</url>
+        </repository>
+
+        <repository>
+            <id>repsy-fluxtion-private</id>
+            <name>Fluxtion private repo</name>
+            <url>https://repo.repsy.io/mvn/gregv12/fluxtion-private</url>
         </repository>
     </repositories>
 
@@ -32,9 +61,33 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fluxtion.dataflow</groupId>
+            <artifactId>compiler</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.36</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hdrhistogram</groupId>
+            <artifactId>HdrHistogram</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.37</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.37</version>
         </dependency>
     </dependencies>
 </project>
