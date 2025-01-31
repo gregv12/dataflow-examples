@@ -51,7 +51,7 @@ public interface StreamProcessorBuilder {
                         4);
 
         //join machine profiles with contacts and then with readings.
-        //Publish alarms with stateful user fiunction
+        //Publish alarms with stateful user function
         var tempMonitor = DataFlowBuilder.groupBy(MachineProfileEvent::id)
                 .mapValues(MachineState::new)
                 .mapBi(
