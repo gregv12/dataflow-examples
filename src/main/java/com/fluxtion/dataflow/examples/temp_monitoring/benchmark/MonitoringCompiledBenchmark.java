@@ -25,7 +25,7 @@ public class MonitoringCompiledBenchmark {
     @BenchmarkMode(Mode.Throughput)
     @Measurement(iterations = 2, time = 10, timeUnit = TimeUnit.SECONDS)
     @OutputTimeUnit(TimeUnit.SECONDS)
-    public void throughPut_No_BranchingProcessor( Blackhole blackhole, TempMonitorJmhStata tempMonitorJmhStata) throws InterruptedException {
+    public void throughPut_FunctionalProcessor( Blackhole blackhole, TempMonitorJmhStata tempMonitorJmhStata) throws InterruptedException {
         blackhole.consume(tempMonitorJmhStata.nextPriceLadder());
     }
 

@@ -12,7 +12,7 @@ import com.fluxtion.dataflow.runtime.time.FixedRateTrigger;
  * Build a rela time event processor that consumes event streams to monitor and alarm machines in a data centre. </br>
  * <br>
  * Monitors each machine for an average or current temperature breach in a sliding window of 4 seconds with a bucket size of 1 second
- * readings are produced randomly every 10 millis the aggregation handles all combining values within a window and dropping
+ * readings are produced randomly every mircosecond the aggregation handles all combining values within a window and dropping
  * values that have expired.<br>
  * <br>
  * Alarm status is published on any change to the alarm state, i.e. new alarms or cleared old alarms<br>
