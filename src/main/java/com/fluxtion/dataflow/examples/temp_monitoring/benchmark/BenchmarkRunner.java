@@ -1,4 +1,4 @@
-package com.fluxtion.dataflow.examples.temp_monitoring_comiled;
+package com.fluxtion.dataflow.examples.temp_monitoring.benchmark;
 
 public class BenchmarkRunner {
 

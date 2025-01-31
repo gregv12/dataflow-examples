@@ -1,20 +1,21 @@
-package com.fluxtion.dataflow.examples;
+package com.fluxtion.dataflow.examples.temp_monitoring.benchmark;
 
 import com.fluxtion.dataflow.Fluxtion;
-import com.fluxtion.dataflow.builder.DataFlowBuilder;
-import com.fluxtion.dataflow.examples.temp_monitoring.*;
+import com.fluxtion.dataflow.examples.temp_monitoring.StreamProcessorBuilder;
+import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.LocationCode;
+import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.MachineProfileEvent;
+import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.MachineReadingEvent;
+import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.SupportContactEvent;
 import com.fluxtion.dataflow.runtime.DataFlow;
-import com.fluxtion.dataflow.runtime.flowfunction.aggregate.function.primitive.DoubleAverageFlowFunction;
-import com.fluxtion.dataflow.runtime.flowfunction.groupby.GroupBy;
-import com.fluxtion.dataflow.runtime.time.FixedRateTrigger;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
+import java.io.StringWriter;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-public class JmhBenchamrk {
+public class MonitoringCompiledBenchmark {
 
     private static final LongAdder counter = new LongAdder();
 
@@ -25,7 +26,6 @@ public class JmhBenchamrk {
     @Measurement(iterations = 2, time = 10, timeUnit = TimeUnit.SECONDS)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void throughPut_No_BranchingProcessor( Blackhole blackhole, TempMonitorJmhStata tempMonitorJmhStata) throws InterruptedException {
-//        priceLadderState.priceProcessorNoBranch.newPriceLadder(priceLadderState.nextPriceLadder());
         blackhole.consume(tempMonitorJmhStata.nextPriceLadder());
     }
 
@@ -38,29 +38,9 @@ public class JmhBenchamrk {
         @Setup(Level.Trial)
         public void doSetup() {
             System.out.println("Setup temp monitor");
-
             counter.reset();
 
-            tempMonitor = Fluxtion.compile(c -> {
-
-                var currentMachineTemp = DataFlowBuilder.groupBy(MachineReadingEvent::id, MachineReadingEvent::temp);
-
-                var avgMachineTemp = DataFlowBuilder.subscribe(MachineReadingEvent.class)
-                        .groupBySliding(MachineReadingEvent::id, MachineReadingEvent::temp, DoubleAverageFlowFunction::new, 1000, 4);
-
-                var tempMonitor = DataFlowBuilder.groupBy(MachineProfileEvent::id)
-                        .mapValues(MachineState::new)
-                        .mapBi(DataFlowBuilder.groupBy(SupportContactEvent::locationCode), Helpers::addContact)
-                        .innerJoin(currentMachineTemp, MachineState::setCurrentTemperature)
-                        .innerJoin(avgMachineTemp, MachineState::setAvgTemperature)
-                        .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
-                        .filterValues(MachineState::outsideOperatingTemp)
-                        .map(GroupBy::toMap)
-                        .map(new AlarmDeltaFilter()::updateActiveAlarms)
-                        .filter(AlarmDeltaFilter::isChanged)
-                        .sink("alarmPublisher");
-//                        .build();
-            });
+            tempMonitor = Fluxtion.compile(c -> StreamProcessorBuilder.buildMachineMonitoring());
             tempMonitor.init();
 
             //set up machine locations
@@ -74,7 +54,7 @@ public class JmhBenchamrk {
             tempMonitor.onEvent(new SupportContactEvent("Tandy", LocationCode.USA_EAST_2, "tandy@fluxtion.com"));
 
             //setup output
-            tempMonitor.addSink("alarmPublisher", JmhBenchamrk::countUpdates);
+            tempMonitor.addSink("alarmPublisher", MonitoringCompiledBenchmark::countUpdates);
         }
 
         public Object nextPriceLadder() {
