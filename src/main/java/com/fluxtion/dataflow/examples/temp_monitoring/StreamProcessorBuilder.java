@@ -37,9 +37,11 @@ public interface StreamProcessorBuilder {
     static FlowBuilder<AlarmDeltaFilter> buildMachineMonitoring() {
 
         //create a stream machine temps grouped by machine id
-        var currentMachineTemp = DataFlowBuilder.groupBy(MachineReadingEvent::id, MachineReadingEvent::temp);
+        var currentMachineTemp = DataFlowBuilder.groupBy(
+                MachineReadingEvent::id, MachineReadingEvent::temp);
 
-        //create a stream machine sliding temps, 4 second window with 1 second buckets grouped by machine id
+        //create a stream of averaged machine sliding temps,
+        //with a 4-second window and 1 second buckets grouped by machine id
         var avgMachineTemp = DataFlowBuilder.subscribe(MachineReadingEvent.class)
                 .groupBySliding(
                         MachineReadingEvent::id,
@@ -48,10 +50,13 @@ public interface StreamProcessorBuilder {
                         1000,
                         4);
 
-        //join machine profiles with contacts and then with readings. Publish alarms with stateful user fiunction
+        //join machine profiles with contacts and then with readings.
+        //Publish alarms with stateful user fiunction
         var tempMonitor = DataFlowBuilder.groupBy(MachineProfileEvent::id)
                 .mapValues(MachineState::new)
-                .mapBi(DataFlowBuilder.groupBy(SupportContactEvent::locationCode), Helpers::addContact)
+                .mapBi(
+                        DataFlowBuilder.groupBy(SupportContactEvent::locationCode),
+                        Helpers::addContact)
                 .innerJoin(currentMachineTemp, MachineState::setCurrentTemperature)
                 .innerJoin(avgMachineTemp, MachineState::setAvgTemperature)
                 .publishTriggerOverride(FixedRateTrigger.atMillis(1_000))
