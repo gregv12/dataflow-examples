@@ -10,7 +10,6 @@ import com.fluxtion.dataflow.runtime.DataFlow;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.io.StringWriter;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
