@@ -56,14 +56,14 @@
     <dependencies>
         <dependency>
             <groupId>com.fluxtion.dataflow</groupId>
-            <artifactId>builder</artifactId>
-            <version>1.11</version>
+            <artifactId>dataflow-compiler</artifactId>
+            <version>1.12</version>
         </dependency>
 
         <dependency>
             <groupId>com.fluxtion.dataflow</groupId>
-            <artifactId>compiler</artifactId>
-            <version>1.11</version>
+            <artifactId>dataflow-runtime</artifactId>
+            <version>1.12</version>
         </dependency>
 
         <dependency>

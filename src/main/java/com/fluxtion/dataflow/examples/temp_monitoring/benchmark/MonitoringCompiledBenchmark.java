@@ -1,6 +1,6 @@
 package com.fluxtion.dataflow.examples.temp_monitoring.benchmark;
 
-import com.fluxtion.dataflow.Fluxtion;
+import com.fluxtion.dataflow.DataFlowCompiler;
 import com.fluxtion.dataflow.examples.temp_monitoring.StreamProcessorBuilder;
 import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.LocationCode;
 import com.fluxtion.dataflow.examples.temp_monitoring.inprocess.MachineProfileEvent;
@@ -40,7 +40,7 @@ public class MonitoringCompiledBenchmark {
             System.out.println("Setup temp monitor");
             counter.reset();
 
-            tempMonitor = Fluxtion.compile(c -> StreamProcessorBuilder.buildMachineMonitoring());
+            tempMonitor = DataFlowCompiler.compile(StreamProcessorBuilder::buildMachineMonitoring);
             tempMonitor.init();
 
             //set up machine locations
